@@ -20,8 +20,7 @@ Versi berikutnya dari *MyTank App* akan melangkah lebih baik dengan fitur-fitur 
 - ⚙ Perhitungan *VCF otomatis* menggunakan standar *API Tables* ( ASTM–IP Petroleum Measurement Tables )
 - 📈 Tampilan hasil *Corrected Volume (VCF-adjusted)* secara real-time  
 
-## Tujuan akhirnya
-menjadikan *MyTank App* sebagai *Aplikasi offline yang praktis bidang perminyakan dan industri*.
+## Tujuan akhirnya: menjadikan *MyTank App* sebagai *Aplikasi offline yang praktis di bidang perminyakan dan industri*.
 ---
 
 ## 🧮 Tentang Perhitungan Volume dan Koreksi Suhu
