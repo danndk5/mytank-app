@@ -1,7 +1,7 @@
 # 🛢 MyTank App
 
 *MyTank* adalah aplikasi mobile berbasis *Flutter* yang dirancang untuk membantu pengguna menghitung dan mencatat volume tangki dengan cara sederhana, cepat, & akurat. 
-Diciptakan untuk keperluan *pribadi maupun profesional, MyTank App menghadirkan kombinasi antara **kinerja ringan, dan **perhitungan cerdas** di satu genggaman.
+Diciptakan untuk keperluan *pribadi maupun profesional*, MyTank App menghadirkan kombinasi antara **kinerja ringan, dan **perhitungan cerdas** di satu genggaman.
 
 ---
 
@@ -20,7 +20,8 @@ Versi berikutnya dari *MyTank App* akan melangkah lebih baik dengan fitur-fitur 
 - ⚙ Perhitungan *VCF otomatis* menggunakan standar *API Tables* ( ASTM–IP Petroleum Measurement Tables )
 - 📈 Tampilan hasil *Corrected Volume (VCF-adjusted)* secara real-time  
 
-Tujuan akhirnya: menjadikan *MyTank App* sebagai *Aplikasi offline yang praktis bidang perminyakan dan industri*.
+## Tujuan akhirnya
+menjadikan *MyTank App* sebagai *Aplikasi offline yang praktis bidang perminyakan dan industri*.
 ---
 
 ## 🧮 Tentang Perhitungan Volume dan Koreksi Suhu
