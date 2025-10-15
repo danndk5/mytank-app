@@ -1,7 +1,7 @@
 # 🛢 MyTank App
 
 *MyTank* adalah aplikasi mobile berbasis *Flutter* yang dirancang untuk membantu pengguna menghitung dan mencatat volume tangki dengan cara sederhana, cepat, & akurat. 
-Diciptakan untuk keperluan *pribadi maupun profesional, MyTank App menghadirkan kombinasi antara **kinerja ringan, dan **perhitungan cerdas* di satu genggaman.
+Diciptakan untuk keperluan *pribadi maupun profesional, MyTank App menghadirkan kombinasi antara **kinerja ringan, dan **perhitungan cerdas** di satu genggaman.
 
 ---
 
@@ -38,7 +38,7 @@ Nilai VCF tergantung pada:
 - Density pada suhu 15°C  
 - Suhu pengukuran (Observed Temperature)
 
-\text{Volume @15°C} = \text{Observed Volume (GOV)} \times \text{VCF}
+Volume @15°C = Observed Volume/GOV x VCF
 
 
 VCF diperoleh dari *tabel referensi resmi ASTM-IP Petroleum Measurement Tables (D1250)* atau melalui perhitungan menggunakan rumus API.
@@ -50,9 +50,7 @@ Dalam proses manual, nilai *Density @15°C* dan *VCF* diperoleh menggunakan buku
 
 *📘 ASTM–IP Petroleum Measurement Tables*  
 Metric Edition — Metric Units of Measurement  
-ASTM Designation: *D 1250*  
-IP Designation: *200*  
-BS Handbook No. 16  
+ASTM Designation: *D 1250*   
 Prepared jointly by:  
 *American Society for Testing Materials (ASTM)* & *The Institute of Petroleum (IP)*  
 
