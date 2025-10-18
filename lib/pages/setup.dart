@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/tank.dart';
 import '../services/db.dart';
+import '../services/export_service.dart';
 
 class SetupPage extends StatefulWidget {
   @override
@@ -30,6 +31,43 @@ class _SetupPageState extends State<SetupPage> with SingleTickerProviderStateMix
     return Scaffold(
       appBar: AppBar(
         title: Text('Setup'),
+        actions: [
+          // Export Button
+          IconButton(
+            icon: Icon(Icons.upload_file),
+            tooltip: 'Export Data',
+            onPressed: () async {
+              final path = await ExportService.exportData();
+              if (path != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Data berhasil di-export ke: $path')),
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Gagal export data'), backgroundColor: Colors.red),
+                );
+              }
+            },
+          ),
+          // Import Button
+          IconButton(
+            icon: Icon(Icons.download),
+            tooltip: 'Import Data',
+            onPressed: () async {
+              bool success = await ExportService.importData();
+              if (success) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Data berhasil di-import!')),
+                );
+                loadTanks();
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Gagal import data'), backgroundColor: Colors.red),
+                );
+              }
+            },
+          ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: [

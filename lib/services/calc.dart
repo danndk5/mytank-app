@@ -1,4 +1,5 @@
 import '../models/tank.dart';
+import 'vcf_services.dart';
 
 class CalculatorService {
   static Map<String, dynamic> calculateVolume(
@@ -54,9 +55,7 @@ class CalculatorService {
   }
 
   static double calculateVCF(double temp, double density) {
-    final baseVCF = 1.0;
-    final tempCorrection = (15 - temp) * 0.0007;
-    final densityCorrection = (density - 0.85) * 0.5;
-    return baseVCF + tempCorrection + densityCorrection;
+    // Pakai VCF Service yang lebih akurat
+    return VCFService.getVCF(temp, density);
   }
 }
