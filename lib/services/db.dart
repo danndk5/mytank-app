@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import '../models/tank.dart';
+import '../models/calculation_history.dart';
 
 class DatabaseService {
   static Database? _database;
@@ -64,6 +65,158 @@ class DatabaseService {
         FOREIGN KEY (tank_id) REFERENCES tanks(id) ON DELETE CASCADE
       )
     ''');
+
+    // Table: calculation_history
+    await _createHistoryTable(db);
+
+  }
+  
+  // Method untuk membuat tabel history 
+   static Future<void> _createHistoryTable(Database db) async {
+   await db.execute('''
+    CREATE TABLE calculation_history (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tankId INTEGER NOT NULL,
+      tankName TEXT NOT NULL,
+      sounding REAL NOT NULL,
+      mejaUkur REAL NOT NULL,
+      tempDalam REAL NOT NULL,
+      tempLuar REAL NOT NULL,
+      densityObserved REAL NOT NULL,
+      vt REAL NOT NULL,
+      vObs REAL NOT NULL,
+      vcf REAL NOT NULL,
+      v15 REAL NOT NULL,
+      d15 REAL NOT NULL,
+      timestamp TEXT NOT NULL,
+      notes TEXT
+    )
+   ''');
+  }
+
+   // Simpan history perhitungan
+   static Future<int> saveHistory(CalculationHistory history) async {
+   final db = await database;
+   return await db.insert('calculation_history', history.toMap());
+   }
+
+  // Get semua history
+  static Future<List<CalculationHistory>> getAllHistory() async {
+   final db = await database;
+   final maps = await db.query(
+    'calculation_history',
+    orderBy: 'timestamp DESC',
+   );
+   return maps.map((map) => CalculationHistory.fromMap(map)).toList();
+  }
+
+   // Get history by tank ID
+  static Future<List<CalculationHistory>> getHistoryByTank(int tankId) async {
+   final db = await database;
+   final maps = await db.query(
+    'calculation_history',
+    where: 'tankId = ?',
+    whereArgs: [tankId],
+    orderBy: 'timestamp DESC',
+   );
+   return maps.map((map) => CalculationHistory.fromMap(map)).toList();
+  }
+
+   // Get history by date range
+   static Future<List<CalculationHistory>> getHistoryByDateRange(
+   DateTime start,
+   DateTime end,
+   ) async {
+   final db = await database;
+   final maps = await db.query(
+    'calculation_history',
+    where: 'timestamp BETWEEN ? AND ?',
+    whereArgs: [start.toIso8601String(), end.toIso8601String()],
+    orderBy: 'timestamp DESC',
+   );
+   return maps.map((map) => CalculationHistory.fromMap(map)).toList();
+  }
+
+  /// Get latest history (untuk kalkulator selisih)
+   static Future<CalculationHistory?> getLatestHistory(int tankId) async {
+   final db = await database;
+   final maps = await db.query(
+    'calculation_history',
+    where: 'tankId = ?',
+    whereArgs: [tankId],
+    orderBy: 'timestamp DESC',
+    limit: 1,
+   );
+  
+   if (maps.isEmpty) return null;
+   return CalculationHistory.fromMap(maps.first);
+  }
+
+   // Get history by ID
+   static Future<CalculationHistory?> getHistoryById(int id) async {
+   final db = await database;
+   final maps = await db.query(
+    'calculation_history',
+    where: 'id = ?',
+    whereArgs: [id],
+   );
+  
+   if (maps.isEmpty) return null;
+   return CalculationHistory.fromMap(maps.first);
+  }
+
+   // Update history notes
+   static Future<int> updateHistoryNotes(int id, String notes) async {
+   final db = await database;
+   return await db.update(
+    'calculation_history',
+    {'notes': notes},
+    where: 'id = ?',
+    whereArgs: [id],
+   );
+  }
+
+   // Delete history
+   static Future<int> deleteHistory(int id) async {
+   final db = await database;
+   return await db.delete(
+    'calculation_history',
+    where: 'id = ?',
+    whereArgs: [id],
+   );
+  }
+
+   // Delete all history for a tank
+   static Future<int> deleteHistoryByTank(int tankId) async {
+   final db = await database;
+   return await db.delete(
+    'calculation_history',
+    where: 'tankId = ?',
+    whereArgs: [tankId],
+   );
+  }
+
+   // Clear all history
+   static Future<int> clearAllHistory() async {
+   final db = await database;
+   return await db.delete('calculation_history');
+  }
+
+   // Get history count
+   static Future<int> getHistoryCount() async {
+   final db = await database;
+   final result = await db.rawQuery('SELECT COUNT(*) as count FROM calculation_history');
+   return Sqflite.firstIntValue(result) ?? 0;
+  }
+
+   // Get history count by tank
+   static Future<int> getHistoryCountByTank(int tankId) async {
+   final db = await database;
+   final result = await db.rawQuery(
+    'SELECT COUNT(*) as count FROM calculation_history WHERE tankId = ?',
+    [tankId],
+   );
+   return Sqflite.firstIntValue(result) ?? 0;
   }
 
   // ==================== TANKS ====================

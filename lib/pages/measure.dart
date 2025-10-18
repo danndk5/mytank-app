@@ -257,6 +257,12 @@ class _MeasurementPageState extends State<MeasurementPage> {
               'v15': v15,
               'd15': d15,
             },
+            tank: widget.tank,
+            sounding: double.parse(soundingController.text),
+            mejaUkur: double.parse(mejaUkurController.text),
+            tempDalam: double.parse(tempDalamController.text),
+            tempLuar: double.parse(tempLuarController.text),
+            densityObserved: double.parse(densityController.text),
           ),
         ),
       );

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/tank.dart';
 import '../services/db.dart';
 import '../services/export_service.dart';
+import '../services/theme_service.dart';
 
 class SetupPage extends StatefulWidget {
   @override
@@ -28,10 +30,22 @@ class _SetupPageState extends State<SetupPage> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
+    final themeService = Provider.of<ThemeService>(context);
+    
     return Scaffold(
       appBar: AppBar(
         title: Text('Setup'),
         actions: [
+          // Dark Mode Toggle
+          IconButton(
+            icon: Icon(
+              themeService.isDarkMode ? Icons.light_mode : Icons.dark_mode,
+            ),
+            tooltip: themeService.isDarkMode ? 'Light Mode' : 'Dark Mode',
+            onPressed: () {
+              themeService.toggleTheme();
+            },
+          ),
           // Export Button
           IconButton(
             icon: Icon(Icons.upload_file),

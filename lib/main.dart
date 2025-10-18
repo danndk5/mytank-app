@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'pages/splash.dart';
+import 'services/theme_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,14 +12,20 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MyTank',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (_) => ThemeService(),
+      child: Consumer<ThemeService>(
+        builder: (context, themeService, child) {
+          return MaterialApp(
+            title: 'MyTank',
+            theme: ThemeService.lightTheme,
+            darkTheme: ThemeService.darkTheme,
+            themeMode: themeService.themeMode,
+            home: SplashScreen(),
+            debugShowCheckedModeBanner: false,
+          );
+        },
       ),
-      home: SplashScreen(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }
