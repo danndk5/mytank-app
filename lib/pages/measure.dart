@@ -26,10 +26,10 @@ class _MeasurementPageState extends State<MeasurementPage> {
   static const double MAX_TEMP = 100.0;
   static const double TEMP_WARNING = 80.0;
   static const double TEMP_DIFF_WARNING = 30.0;
-  static const double MIN_DENSITY = 0.5;
-  static const double MAX_DENSITY = 1.5;
-  static const double DENSITY_WARNING_LOW = 0.7;
-  static const double DENSITY_WARNING_HIGH = 1.0;
+  static const double MIN_DENSITY = 0.700;
+  static const double MAX_DENSITY = 1.000;
+  static const double DENSITY_WARNING_LOW = 0.700;
+  static const double DENSITY_WARNING_HIGH = 1.000;
 
   // Validator methods
   String? validateSounding(String? value) {
@@ -44,13 +44,6 @@ class _MeasurementPageState extends State<MeasurementPage> {
     
     if (sounding <= 0) {
       return 'Sounding harus lebih dari 0';
-    }
-    
-    // Check against tank capacity (assuming capacity is in Liters, convert to mm height)
-    // This is a simplified check - adjust based on your tank calculation logic
-    final maxHeight = widget.tank.capacity * 1000 / (3.14159 * (widget.tank.diameter / 2) * (widget.tank.diameter / 2));
-    if (sounding > maxHeight) {
-      return 'Sounding melebihi kapasitas tangki (max: ${maxHeight.toStringAsFixed(0)} mm)';
     }
     
     return null;
@@ -315,7 +308,7 @@ class _MeasurementPageState extends State<MeasurementPage> {
                       decoration: InputDecoration(
                         labelText: 'Sounding (mm)',
                         border: OutlineInputBorder(),
-                        hintText: '1823',
+                        hintText: '00000',
                         prefixIcon: Icon(Icons.height),
                         helperText: 'Tinggi cairan dari dasar tangki',
                       ),
@@ -328,7 +321,7 @@ class _MeasurementPageState extends State<MeasurementPage> {
                       decoration: InputDecoration(
                         labelText: 'Meja Ukur (mm)',
                         border: OutlineInputBorder(),
-                        hintText: '40',
+                        hintText: '00',
                         prefixIcon: Icon(Icons.straighten),
                         helperText: 'Tinggi meja ukur referensi',
                       ),
@@ -341,7 +334,7 @@ class _MeasurementPageState extends State<MeasurementPage> {
                       decoration: InputDecoration(
                         labelText: 'Temperatur Dalam (°C)',
                         border: OutlineInputBorder(),
-                        hintText: '31.0',
+                        hintText: '00.0',
                         prefixIcon: Icon(Icons.thermostat),
                         helperText: 'Suhu cairan di dalam tangki',
                       ),
@@ -354,7 +347,7 @@ class _MeasurementPageState extends State<MeasurementPage> {
                       decoration: InputDecoration(
                         labelText: 'Temperatur Luar (°C)',
                         border: OutlineInputBorder(),
-                        hintText: '30.0',
+                        hintText: '00.0',
                         prefixIcon: Icon(Icons.wb_sunny),
                         helperText: 'Suhu lingkungan luar',
                       ),
@@ -367,7 +360,7 @@ class _MeasurementPageState extends State<MeasurementPage> {
                       decoration: InputDecoration(
                         labelText: 'Density Observed',
                         border: OutlineInputBorder(),
-                        hintText: '0.850',
+                        hintText: '0.000',
                         prefixIcon: Icon(Icons.opacity),
                         helperText: 'Massa jenis cairan pada suhu observasi',
                       ),
