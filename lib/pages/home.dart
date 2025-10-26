@@ -9,7 +9,9 @@ import 'setup.dart';
 import 'history.dart';
 import 'calculator.dart';
 import 'about.dart';
-import 'package:lottie/lottie.dart';
+import 'tank_detail.dart';
+import 'settings.dart';
+import 'analytics.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -65,6 +67,29 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.blue.shade700,
         foregroundColor: Colors.white,
         actions: [
+          // Analytics Button - BARU
+          IconButton(
+            icon: Icon(Icons.analytics),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AnalyticsPage()),
+              );
+            },
+            tooltip: 'Analytics',
+          ),
+          
+          // Settings Button - BARU
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
+              );
+            },
+            tooltip: 'Pengaturan',
+          ),
           // About Button
           IconButton(
             icon: Icon(Icons.info),
@@ -228,7 +253,7 @@ class _HomePageState extends State<HomePage> {
                       SizedBox(width: 12),
                       Expanded(
                         child: Text(
-                          'Pilih tangki untuk memulai pengukuran',
+                          'Tap tangki untuk detail, tekan lama untuk pengukuran cepat',
                           style: TextStyle(
                             color: Colors.grey.shade700,
                             fontSize: 14,
@@ -245,63 +270,22 @@ class _HomePageState extends State<HomePage> {
               // Tank List
               Expanded(
                 child: tanks.isEmpty
-    ? Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // LOTTIE ANIMATION
-            Lottie.asset(
-              'assets/icon/animations/empty_state.json',
-              width: 200,
-              height: 200,
-              repeat: true,
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Belum Ada Tangki',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade700,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Tambahkan tangki pertama Anda',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey.shade500,
-              ),
-            ),
-            SizedBox(height: 30),
-            ElevatedButton.icon(
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  AppAnimations.createSlideRoute(
-                    SetupPage(),
-                    direction: AxisDirection.up,
-                  ),
-                );
-                loadTanks();
-              },
-              icon: Icon(Icons.add),
-              label: Text('Tambah Tangki'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue.shade700,
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 15,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-            ),
-          ],
-        ),
-      )
+                    ? EmptyStateWidget(
+                        icon: Icons.water_drop_outlined,
+                        title: 'Belum ada tangki',
+                        message: 'Tambahkan tangki pertama Anda di menu Setup',
+                        actionLabel: 'Tambah Tangki',
+                        onAction: () async {
+                          await Navigator.push(
+                            context,
+                            AppAnimations.createSlideRoute(
+                              SetupPage(),
+                              direction: AxisDirection.up,
+                            ),
+                          );
+                          loadTanks();
+                        },
+                      )
                     : RefreshIndicator(
                         onRefresh: () async {
                           await loadTanks();
@@ -323,14 +307,27 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 child: InkWell(
                                   borderRadius: BorderRadius.circular(12),
+                                  // TAP - Ke Tank Detail - UPDATED
                                   onTap: () async {
+                                    final result = await Navigator.push(
+                                      context,
+                                      AppAnimations.createSlideRoute(
+                                        TankDetailPage(tank: tank),
+                                      ),
+                                    );
+                                    if (result == true) {
+                                      loadTanks(); // Refresh jika ada perubahan
+                                      loadHistoryCount();
+                                    }
+                                  },
+                                  // LONG PRESS - Langsung ke Measurement - BARU
+                                  onLongPress: () async {
                                     await Navigator.push(
                                       context,
                                       AppAnimations.createSlideRoute(
                                         MeasurementPage(tank: tank),
                                       ),
                                     );
-                                    // Refresh history count after measurement
                                     loadHistoryCount();
                                   },
                                   child: Padding(
