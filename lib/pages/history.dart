@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/calculation_history.dart';
 import '../services/db.dart';
+import '../utils/animations.dart';
 
 class HistoryPage extends StatefulWidget {
   @override
@@ -336,30 +337,33 @@ class _HistoryPageState extends State<HistoryPage> {
                           itemCount: filteredHistory.length,
                           itemBuilder: (context, index) {
                             final history = filteredHistory[index];
-                            return Card(
-                              margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: Colors.blue.shade100,
-                                  child: Icon(Icons.water_drop, color: Colors.blue.shade700),
+                            return AnimatedCard(
+                              delay: Duration(milliseconds: 50 * index),
+                              child: Card(
+                                margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    backgroundColor: Colors.blue.shade100,
+                                    child: Icon(Icons.water_drop, color: Colors.blue.shade700),
+                                  ),
+                                  title: Text(
+                                    history.tankName,
+                                    style: TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(height: 4),
+                                      Text('V15: ${history.v15.toStringAsFixed(2)} L'),
+                                      Text(
+                                        history.getFormattedDate(),
+                                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                                      ),
+                                    ],
+                                  ),
+                                  trailing: Icon(Icons.chevron_right),
+                                  onTap: () => showHistoryDetail(history),
                                 ),
-                                title: Text(
-                                  history.tankName,
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    SizedBox(height: 4),
-                                    Text('V15: ${history.v15.toStringAsFixed(2)} L'),
-                                    Text(
-                                      history.getFormattedDate(),
-                                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                                    ),
-                                  ],
-                                ),
-                                trailing: Icon(Icons.chevron_right),
-                                onTap: () => showHistoryDetail(history),
                               ),
                             );
                           },

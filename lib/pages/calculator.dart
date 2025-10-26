@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/calculation_history.dart';
 import '../models/tank.dart';
 import '../services/db.dart';
+import '../utils/animations.dart';
 
 class CalculatorPage extends StatefulWidget {
   @override
@@ -439,42 +440,57 @@ class _CalculatorPageState extends State<CalculatorPage> {
                       )
                     else ...[
                       // History 1 Selector
-                      _buildHistorySelector(
-                        'Perhitungan Pertama (Awal)',
-                        history1,
-                        (val) => setState(() => history1 = val),
+                      AnimatedCard(
+                        delay: Duration(milliseconds: 300),
+                        child: _buildHistorySelector(
+                          'Perhitungan Pertama (Awal)',
+                          history1,
+                          (val) => setState(() => history1 = val),
+                        ),
                       ),
 
                       SizedBox(height: 20),
 
                       // History 2 Selector
-                      _buildHistorySelector(
-                        'Perhitungan Kedua (Akhir)',
-                        history2,
-                        (val) => setState(() => history2 = val),
+                      AnimatedCard(
+                        delay: Duration(milliseconds: 400),
+                        child: _buildHistorySelector(
+                          'Perhitungan Kedua (Akhir)',
+                          history2,
+                          (val) => setState(() => history2 = val),
+                        ),
                       ),
 
                       if (history1 != null && history2 != null) ...[
                         SizedBox(height: 24),
                         
                         // Result Card
-                        _buildResultCard(difference!),
+                        AnimatedCard(
+                          delay: Duration(milliseconds: 500),
+                          child: _buildResultCard(difference!),
+                        ),
                         
                         SizedBox(height: 16),
                         
                         // Comparison Cards
-                        _buildComparisonCard(
-                          history1!,
-                          'AWAL',
-                          Colors.blue,
+                        AnimatedCard(
+                          delay: Duration(milliseconds: 600),
+                          child: _buildComparisonCard(
+                            history1!,
+                            'AWAL',
+                            Colors.blue,
+                          ),
                         ),
                         
                         SizedBox(height: 12),
                         
-                        _buildComparisonCard(
-                          history2!,
-                          'AKHIR',
-                          Colors.orange,
+                        AnimatedCard(
+                          delay: Duration(milliseconds: 700),
+                          child: _buildComparisonCard(
+                            history2!,
+                            'AKHIR',
+                            Colors.orange,
+                          ),
                         ),
                       ],
                     ],

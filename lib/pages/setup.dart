@@ -4,6 +4,7 @@ import '../models/tank.dart';
 import '../services/db.dart';
 import '../services/export_service.dart';
 import '../services/theme_service.dart';
+import '../utils/animations.dart';
 
 class SetupPage extends StatefulWidget {
   @override
@@ -116,6 +117,8 @@ class _TankSetupTabState extends State<TankSetupTab> {
   final locationController = TextEditingController();
   final capacityController = TextEditingController();
   final diameterController = TextEditingController();
+  final tempRefController = TextEditingController(text: '32.0');
+  final koefEkspansiController = TextEditingController(text: '0.0000348');
 
   @override
   void initState() {
@@ -144,6 +147,8 @@ class _TankSetupTabState extends State<TankSetupTab> {
       location: locationController.text,
       capacity: double.tryParse(capacityController.text) ?? 0,
       diameter: double.tryParse(diameterController.text) ?? 0,
+      tempRef: double.tryParse(tempRefController.text) ?? 32.0,
+      koefEkspansi: double.tryParse(koefEkspansiController.text) ?? 0.0000348,
     ));
 
     nameController.clear();
@@ -151,12 +156,48 @@ class _TankSetupTabState extends State<TankSetupTab> {
     locationController.clear();
     capacityController.clear();
     diameterController.clear();
+    tempRefController.text = '32.0';
+    koefEkspansiController.text = '0.0000348';
 
     loadTanks();
     widget.onChanged();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Tangki berhasil disimpan!')),
     );
+  }
+
+  Future<void> deleteTank(Tank tank) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Hapus Tangki'),
+        content: Text(
+          'Yakin ingin menghapus tangki "${tank.name}"?\n\n'
+          'Semua data kalibrasi, fraksi, dan history tangki ini akan ikut terhapus!',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await DatabaseService.deleteTank(tank.id!);
+      await DatabaseService.deleteHistoryByTank(tank.id!);
+      loadTanks();
+      widget.onChanged();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Tangki "${tank.name}" berhasil dihapus!')),
+      );
+    }
   }
 
   @override
@@ -198,6 +239,28 @@ class _TankSetupTabState extends State<TankSetupTab> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(labelText: 'Diameter (m)', border: OutlineInputBorder()),
                 ),
+                SizedBox(height: 12),
+                TextField(
+                  controller: tempRefController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(
+                    labelText: 'Temperatur Referensi (°C)',
+                    border: OutlineInputBorder(),
+                    hintText: '32.0',
+                    helperText: 'Sesuai tabel volume tangki (32°C atau 34°C)',
+                  ),
+                ),
+                SizedBox(height: 12),
+                TextField(
+                  controller: koefEkspansiController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
+                  decoration: InputDecoration(
+                    labelText: 'Koefisien Ekspansi',
+                    border: OutlineInputBorder(),
+                    hintText: '0.0000348',
+                    helperText: 'Koefisien muai ruang bahan per °C',
+                  ),
+                ),
                 SizedBox(height: 16),
                 ElevatedButton.icon(
                   onPressed: saveTank,
@@ -217,6 +280,11 @@ class _TankSetupTabState extends State<TankSetupTab> {
           child: ListTile(
             title: Text(tank.name, style: TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Text(tank.owner),
+            trailing: IconButton(
+              icon: Icon(Icons.delete, color: Colors.red),
+              onPressed: () => deleteTank(tank),
+              tooltip: 'Hapus Tangki',
+            ),
           ),
         )).toList(),
       ],
@@ -296,6 +364,72 @@ class _CalibrationSetupTabState extends State<CalibrationSetupTab> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Data fraksi ditambahkan!')));
   }
 
+  Future<void> deleteCalibration(int index) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Hapus Data Kalibrasi'),
+        content: Text(
+          'Yakin ingin menghapus data kalibrasi ini?\n\n'
+          '${calibration[index].meter}m ${calibration[index].cm}cm = ${calibration[index].volume}L',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      calibration.removeAt(index);
+      await DatabaseService.saveCalibration(selectedTank!.id!, calibration);
+      loadData();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data kalibrasi berhasil dihapus!')),
+      );
+    }
+  }
+
+  Future<void> deleteFraction(int index) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Hapus Data Fraksi'),
+        content: Text(
+          'Yakin ingin menghapus data fraksi ini?\n\n'
+          '${fraction[index].cincin}: ${fraction[index].heightFrom}m - ${fraction[index].heightTo}m',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      fraction.removeAt(index);
+      await DatabaseService.saveFraction(selectedTank!.id!, fraction);
+      loadData();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data fraksi berhasil dihapus!')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView(
@@ -340,7 +474,23 @@ class _CalibrationSetupTabState extends State<CalibrationSetupTab> {
                             itemCount: calibration.length,
                             itemBuilder: (context, index) {
                               final cal = calibration[index];
-                              return ListTile(dense: true, title: Text('${cal.meter}m ${cal.cm}cm'), trailing: Text('${cal.volume} L'));
+                              return ListTile(
+                                dense: true,
+                                title: Text('${cal.meter}m ${cal.cm}cm'),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('${cal.volume} L'),
+                                    SizedBox(width: 8),
+                                    IconButton(
+                                      icon: Icon(Icons.delete, color: Colors.red, size: 20),
+                                      onPressed: () => deleteCalibration(index),
+                                      padding: EdgeInsets.zero,
+                                      constraints: BoxConstraints(),
+                                    ),
+                                  ],
+                                ),
+                              );
                             },
                           ),
                   ),
@@ -385,7 +535,17 @@ class _CalibrationSetupTabState extends State<CalibrationSetupTab> {
                             itemCount: fraction.length,
                             itemBuilder: (context, index) {
                               final frac = fraction[index];
-                              return ListTile(dense: true, title: Text('${frac.cincin}: ${frac.heightFrom}m - ${frac.heightTo}m'), subtitle: Text('${frac.mm}mm = ${frac.volume}L'));
+                              return ListTile(
+                                dense: true,
+                                title: Text('${frac.cincin}: ${frac.heightFrom}m - ${frac.heightTo}m'),
+                                subtitle: Text('${frac.mm}mm = ${frac.volume}L'),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.red, size: 20),
+                                  onPressed: () => deleteFraction(index),
+                                  padding: EdgeInsets.zero,
+                                  constraints: BoxConstraints(),
+                                ),
+                              );
                             },
                           ),
                   ),
